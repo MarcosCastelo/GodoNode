@@ -1,0 +1,112 @@
+[gd_scene load_steps=20 format=2]
+
+[ext_resource path="res://scripts/game.gd" type="Script" id=1]
+[ext_resource path="res://scripts/felpudo.gd" type="Script" id=2]
+[ext_resource path="res://assets/felpudo/felpudoVoa1.png" type="Texture" id=3]
+[ext_resource path="res://assets/felpudo/felpudoVoa2.png" type="Texture" id=4]
+[ext_resource path="res://assets/felpudo/felpudoVoa3.png" type="Texture" id=5]
+[ext_resource path="res://assets/felpudo/felpudoVoa4.png" type="Texture" id=6]
+[ext_resource path="res://assets/felpudo/felpudoVoa5.png" type="Texture" id=7]
+[ext_resource path="res://assets/felpudo/felpudoVoa6.png" type="Texture" id=8]
+[ext_resource path="res://sound/somVoa.ogg" type="AudioStream" id=9]
+[ext_resource path="res://scenes/cano.tscn" type="PackedScene" id=10]
+[ext_resource path="res://scripts/gerador.gd" type="Script" id=11]
+[ext_resource path="res://assets/font.ttf" type="DynamicFontData" id=12]
+[ext_resource path="res://sound/somScore.ogg" type="AudioStream" id=13]
+[ext_resource path="res://sound/somHit.ogg" type="AudioStream" id=14]
+
+[sub_resource type="SpriteFrames" id=1]
+animations = [ {
+"frames": [ ExtResource( 3 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ), ExtResource( 7 ), ExtResource( 8 ) ],
+"loop": true,
+"name": "default",
+"speed": 12.0
+} ]
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 73.8404
+
+[sub_resource type="DynamicFont" id=3]
+size = 130
+font_data = ExtResource( 12 )
+
+[sub_resource type="SegmentShape2D" id=4]
+a = Vector2( -6.86507, 97.3184 )
+b = Vector2( 1014.31, 93.2174 )
+
+[sub_resource type="SegmentShape2D" id=5]
+a = Vector2( 1064.05, 2.26245 )
+b = Vector2( -196.333, 26.7834 )
+
+[node name="GameNode" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="Felpudo" type="RigidBody2D" parent="."]
+position = Vector2( 159.071, 790.292 )
+mode = 2
+gravity_scale = 16.0
+script = ExtResource( 2 )
+
+[node name="FelpudoAnim" type="AnimatedSprite" parent="Felpudo"]
+scale = Vector2( 1.4, 1.4 )
+frames = SubResource( 1 )
+frame = 3
+playing = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Felpudo"]
+position = Vector2( 26.4167, -2.83438 )
+shape = SubResource( 2 )
+
+[node name="SomVoa" type="AudioStreamPlayer" parent="Felpudo"]
+stream = ExtResource( 9 )
+
+[node name="Canos" type="Node2D" parent="."]
+
+[node name="Cano" parent="Canos" instance=ExtResource( 10 )]
+position = Vector2( 1174.95, 670.582 )
+
+[node name="Gerador" type="Position2D" parent="Canos"]
+position = Vector2( 1180.11, 661.217 )
+script = ExtResource( 11 )
+
+[node name="Timer" type="Timer" parent="Canos/Gerador"]
+wait_time = 2.0
+autostart = true
+
+[node name="TimeToReplay" type="Timer" parent="."]
+wait_time = 2.0
+
+[node name="Node2D" type="Node2D" parent="."]
+z_index = 2
+
+[node name="Control" type="Control" parent="Node2D"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Label" type="Label" parent="Node2D/Control"]
+margin_top = 15.0
+margin_right = 989.0
+margin_bottom = 233.0
+custom_fonts/font = SubResource( 3 )
+text = "0"
+align = 1
+valign = 1
+
+[node name="SomScore" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 13 )
+
+[node name="SomHit" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 14 )
+
+[node name="Limites" type="StaticBody2D" parent="."]
+position = Vector2( -13.932, -57.891 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Limites"]
+position = Vector2( 2.30714, -36.4881 )
+shape = SubResource( 4 )
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Limites"]
+position = Vector2( 38.5956, 1747.25 )
+shape = SubResource( 5 )
+[connection signal="timeout" from="Canos/Gerador/Timer" to="Canos/Gerador" method="_on_Timer_timeout"]
+[connection signal="timeout" from="TimeToReplay" to="." method="_on_TimeToReplay_timeout"]
